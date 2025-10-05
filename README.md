@@ -21,7 +21,7 @@
 xcode-select --install  # if needed
 
 # Clone and build
-git clone <your-repo-url>
+git clone https://github.com/daviddallakyan2005/pdf-toolbox.git
 cd pdf-toolbox
 go mod download
 go build -o PDFToolbox .
@@ -33,7 +33,7 @@ go build -o PDFToolbox .
 ### Windows
 ```bash
 # Clone and build
-git clone <your-repo-url>
+git clone https://github.com/daviddallakyan2005/pdf-toolbox.git
 cd pdf-toolbox
 go mod download
 go build -o PDFToolbox.exe .
@@ -53,7 +53,7 @@ GOOS=windows GOARCH=amd64 go build -ldflags="-H windowsgui" -o PDFToolbox.exe .
 sudo apt install gcc libgl1-mesa-dev xorg-dev  # Debian/Ubuntu
 
 # Clone and build
-git clone <your-repo-url>
+git clone https://github.com/daviddallakyan2005/pdf-toolbox.git
 cd pdf-toolbox
 go mod download
 go build -o PDFToolbox .
