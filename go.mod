@@ -1,9 +1,10 @@
 module pdf-toolbox
 
-go 1.21
+go 1.23.0
 
 require (
 	fyne.io/fyne/v2 v2.6.3
+	github.com/ncruces/zenity v0.10.14
 	github.com/pdfcpu/pdfcpu v0.11.0
 )
 
@@ -34,7 +35,6 @@ require (
 	github.com/jsummers/gobmp v0.0.0-20230614200233-a9de23ed2e25 // indirect
 	github.com/kr/text v0.2.0 // indirect
 	github.com/mattn/go-runewidth v0.0.16 // indirect
-	github.com/ncruces/zenity v0.10.14 // indirect
 	github.com/nfnt/resize v0.0.0-20180221191011-83c6a9932646 // indirect
 	github.com/nicksnyder/go-i18n/v2 v2.5.1 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
