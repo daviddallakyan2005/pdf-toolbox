@@ -1,0 +1,125 @@
+name: Release
+
+on:
+  push:
+    branches:
+      - main
+    tags:
+      - 'v*.*.*'
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build ${{ matrix.os }} ${{ matrix.arch }}
+    runs-on: ${{ matrix.runner }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: linux
+            arch: amd64
+            runner: ubuntu-latest
+            goos: linux
+            goarch: amd64
+            out: PDFToolbox-linux-amd64
+          - os: linux
+            arch: arm64
+            runner: ubuntu-latest
+            goos: linux
+            goarch: arm64
+            out: PDFToolbox-linux-arm64
+          - os: windows
+            arch: amd64
+            runner: windows-latest
+            goos: windows
+            goarch: amd64
+            out: PDFToolbox-windows-amd64.exe
+            ldflags: -H windowsgui
+          - os: macos
+            arch: amd64
+            runner: macos-latest
+            goos: darwin
+            goarch: amd64
+            out: PDFToolbox-mac-amd64
+          - os: macos
+            arch: arm64
+            runner: macos-latest
+            goos: darwin
+            goarch: arm64
+            out: PDFToolbox-mac-arm64
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.22.x'
+
+      - name: Go build
+        shell: bash
+        run: |
+          set -euo pipefail
+          export GOOS=${{ matrix.goos }}
+          export GOARCH=${{ matrix.goarch }}
+          LD_FLAGS="-s -w ${{ matrix.ldflags }}"
+          go build -ldflags="$LD_FLAGS" -o dist/${{ matrix.out }} .
+
+      - name: Archive artifact
+        if: runner.os != 'Windows'
+        run: |
+          mkdir -p dist
+          cd dist
+          tar -czf ${{ matrix.out }}.tar.gz ${{ matrix.out }}
+
+      - name: Archive artifact (Windows)
+        if: runner.os == 'Windows'
+        shell: bash
+        run: |
+          7z a dist/${{ matrix.out }}.zip dist/${{ matrix.out }}
+
+      - name: Upload artifact (non-Windows)
+        if: runner.os != 'Windows'
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.out }}
+          path: |
+            dist/${{ matrix.out }}
+            dist/${{ matrix.out }}.tar.gz
+
+      - name: Upload artifact (Windows)
+        if: runner.os == 'Windows'
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.out }}
+          path: |
+            dist/${{ matrix.out }}
+            dist/${{ matrix.out }}.zip
+
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: dist
+      - name: Create GitHub Release (tagged)
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: dist/**
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Create/Update Nightly Release (main)
+        if: github.ref == 'refs/heads/main'
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: nightly
+          name: Nightly
+          prerelease: true
+          files: dist/**
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+
