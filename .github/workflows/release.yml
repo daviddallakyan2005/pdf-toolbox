@@ -104,7 +104,7 @@ jobs:
         run: |
           mkdir -p dist
           cd dist
-          tar -czf ${{ matrix.out }}.tar.gz ${{ matrix.out }}
+          if [ -f "${{ matrix.out }}" ]; then tar -czf ${{ matrix.out }}.tar.gz ${{ matrix.out }}; else echo "Skipping tar.gz: ${{ matrix.out }} not found"; fi
 
       - name: Archive artifact (Windows)
         if: runner.os == 'Windows'
@@ -120,6 +120,8 @@ jobs:
           path: |
             dist/${{ matrix.out }}
             dist/${{ matrix.out }}.tar.gz
+            dist/${{ matrix.out }}.tar.xz
+          if-no-files-found: ignore
 
       - name: Upload artifact (Windows)
         if: runner.os == 'Windows'
