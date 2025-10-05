@@ -1,0 +1,50 @@
+# Binaries for programs and plugins
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+PDFToolbox
+PDFToolbox.exe
+pdf-toolbox
+pdf-toolbox.exe
+
+# Test binary, built with `go test -c`
+*.test
+/test
+*PDFToolbox*
+
+# Output of the go coverage tool
+*.out
+
+# Go workspace file
+go.work
+
+# Dependency directories
+vendor/
+
+# IDE specific files
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS specific files
+.DS_Store
+Thumbs.db
+
+# Build output
+bin/
+dist/
+build/
+
+# Temporary files
+*.tmp
+*.log
+
+# PDF test files
+*.pdf
+test_output/
+output/
+
