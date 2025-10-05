@@ -22,12 +22,6 @@ jobs:
             goos: linux
             goarch: amd64
             out: PDFToolbox-linux-amd64
-          - os: linux
-            arch: arm64
-            runner: ubuntu-latest
-            goos: linux
-            goarch: arm64
-            out: PDFToolbox-linux-arm64
           - os: windows
             arch: amd64
             runner: windows-latest
@@ -35,12 +29,6 @@ jobs:
             goarch: amd64
             out: PDFToolbox-windows-amd64.exe
             ldflags: -H windowsgui
-          - os: macos
-            arch: amd64
-            runner: macos-latest
-            goos: darwin
-            goarch: amd64
-            out: PDFToolbox-mac-amd64
           - os: macos
             arch: arm64
             runner: macos-latest
@@ -56,12 +44,29 @@ jobs:
         with:
           go-version: '1.22.x'
 
+      - name: Install Linux build deps (GLFW/OpenGL)
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            xorg-dev \
+            libgl1-mesa-dev \
+            libxrandr-dev \
+            libxcursor-dev \
+            libxinerama-dev \
+            libxi-dev \
+            libxxf86vm-dev \
+            libxkbcommon-dev \
+            libwayland-dev \
+            wayland-protocols
+
       - name: Go build
         shell: bash
         run: |
           set -euo pipefail
           export GOOS=${{ matrix.goos }}
           export GOARCH=${{ matrix.goarch }}
+          export CGO_ENABLED=1
           LD_FLAGS="-s -w ${{ matrix.ldflags }}"
           go build -ldflags="$LD_FLAGS" -o dist/${{ matrix.out }} .
 
