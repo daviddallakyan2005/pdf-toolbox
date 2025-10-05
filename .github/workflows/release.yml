@@ -83,7 +83,16 @@ jobs:
             export FYNE_CROSS_IMAGE=fyneio/fyne-cross:latest
             export GOTOOLCHAIN=auto
             GOOS= GOARCH= go run github.com/fyne-io/fyne-cross@v1.6.1 linux -arch arm64 -name PDFToolbox
-            cp -f fyne-cross/dist/linux-arm64/PDFToolbox dist/${{ matrix.out }}
+            # Keep packaged artifact
+            cp -f fyne-cross/dist/linux-arm64/PDFToolbox.tar.xz dist/${{ matrix.out }}.tar.xz || true
+            # Extract binary and place at expected path
+            tar -xJf fyne-cross/dist/linux-arm64/PDFToolbox.tar.xz -C fyne-cross/dist/linux-arm64/
+            if [[ -f "fyne-cross/dist/linux-arm64/PDFToolbox" ]]; then
+              cp -f fyne-cross/dist/linux-arm64/PDFToolbox dist/${{ matrix.out }}
+            else
+              BIN_PATH=$(find fyne-cross/dist/linux-arm64 -maxdepth 2 -type f -name PDFToolbox | head -n1)
+              if [[ -n "$BIN_PATH" ]]; then cp -f "$BIN_PATH" dist/${{ matrix.out }}; fi
+            fi
           else
             export CGO_ENABLED=1
             LD_FLAGS="-s -w ${{ matrix.ldflags }}"
