@@ -79,7 +79,9 @@ jobs:
           mkdir -p dist
           if [[ "${{ matrix.os }}" == "linux" && "${{ matrix.arch }}" == "arm64" ]]; then
             echo "Building Linux arm64 via fyne-cross (Docker)"
-            GOOS= GOARCH= go run github.com/fyne-io/fyne-cross@latest linux -arch arm64 -name PDFToolbox
+            export FYNE_CROSS_IMAGE=fyneio/fyne-cross:latest
+            export GOTOOLCHAIN=auto
+            GOOS= GOARCH= go run github.com/fyne-io/fyne-cross@v1.6.1 linux -arch arm64 -name PDFToolbox
             cp -f fyne-cross/dist/linux-arm64/PDFToolbox dist/${{ matrix.out }}
           else
             export CGO_ENABLED=1
