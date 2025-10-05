@@ -22,6 +22,12 @@ jobs:
             goos: linux
             goarch: amd64
             out: PDFToolbox-linux-amd64
+          - os: linux
+            arch: arm64
+            runner: ubuntu-latest
+            goos: linux
+            goarch: arm64
+            out: PDFToolbox-linux-arm64
           - os: windows
             arch: amd64
             runner: windows-latest
@@ -35,6 +41,12 @@ jobs:
             goos: darwin
             goarch: arm64
             out: PDFToolbox-mac-arm64
+          - os: macos
+            arch: amd64
+            runner: macos-13
+            goos: darwin
+            goarch: amd64
+            out: PDFToolbox-mac-amd64
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -66,9 +78,17 @@ jobs:
           set -euo pipefail
           export GOOS=${{ matrix.goos }}
           export GOARCH=${{ matrix.goarch }}
-          export CGO_ENABLED=1
-          LD_FLAGS="-s -w ${{ matrix.ldflags }}"
-          go build -ldflags="$LD_FLAGS" -o dist/${{ matrix.out }} .
+          mkdir -p dist
+          if [[ "${{ matrix.os }}" == "linux" && "${{ matrix.arch }}" == "arm64" ]]; then
+            echo "Building Linux arm64 via fyne-cross (Docker)"
+            go install github.com/fyne-io/fyne-cross@latest
+            $GOPATH/bin/fyne-cross linux -arch arm64 -name PDFToolbox
+            cp -f fyne-cross/dist/linux-arm64/PDFToolbox dist/${{ matrix.out }}
+          else
+            export CGO_ENABLED=1
+            LD_FLAGS="-s -w ${{ matrix.ldflags }}"
+            go build -ldflags="$LD_FLAGS" -o dist/${{ matrix.out }} .
+          fi
 
       - name: Archive artifact
         if: runner.os != 'Windows'
