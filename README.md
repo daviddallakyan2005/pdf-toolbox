@@ -64,7 +64,7 @@ go build -o PDFToolbox .
 
 ## Requirements
 
-- **Go 1.21+**
+- **Go 1.23+**
 - **macOS:** Xcode command line tools
 - **Windows:** None (static binary)
 - **Linux:** gcc, libgl1-mesa-dev, xorg-dev
