@@ -4,8 +4,6 @@ on:
   push:
     branches:
       - main
-    tags:
-      - 'v*.*.*'
   workflow_dispatch:
 
 jobs:
@@ -82,7 +80,7 @@ jobs:
           if [[ "${{ matrix.os }}" == "linux" && "${{ matrix.arch }}" == "arm64" ]]; then
             echo "Building Linux arm64 via fyne-cross (Docker)"
             go install github.com/fyne-io/fyne-cross@latest
-            $GOPATH/bin/fyne-cross linux -arch arm64 -name PDFToolbox
+            $(go env GOPATH)/bin/fyne-cross linux -arch arm64 -name PDFToolbox
             cp -f fyne-cross/dist/linux-arm64/PDFToolbox dist/${{ matrix.out }}
           else
             export CGO_ENABLED=1
@@ -136,13 +134,14 @@ jobs:
           files: dist/**
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - name: Create/Update Nightly Release (main)
+      - name: Create/Update Latest Release (main)
         if: github.ref == 'refs/heads/main'
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: nightly
-          name: Nightly
-          prerelease: true
+          tag_name: latest
+          name: Latest
+          prerelease: false
+          make_latest: true
           files: dist/**
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

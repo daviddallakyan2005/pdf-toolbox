@@ -2,7 +2,7 @@
 
 Prebuilt binaries are provided on GitHub Releases for macOS, Windows, and Linux (amd64/arm64).
 
-1. Go to the Releases page: [Download latest release](https://github.com/daviddallakyan2005/pdf-toolbox/releases/latest)
+1. Go to the Releases page: [All releases](https://github.com/daviddallakyan2005/pdf-toolbox/releases) or the always-updating [Nightly build](https://github.com/daviddallakyan2005/pdf-toolbox/releases/tag/nightly)
 2. Download the archive matching your OS and architecture:
    - macOS: `PDFToolbox-mac-amd64.tar.gz` or `PDFToolbox-mac-arm64.tar.gz`
    - Windows: `PDFToolbox-windows-amd64.zip`
@@ -19,4 +19,6 @@ You can still build locally if you prefer:
 go build -ldflags="-s -w" -o PDFToolbox .
 ```
 
-This repository includes a GitHub Actions workflow that builds and uploads release artifacts when tags like.
+This repository includes a GitHub Actions workflow that:
+ - publishes a Nightly prerelease on every push to `main`
+ - publishes a versioned release when you push a tag like `v1.2.3`
